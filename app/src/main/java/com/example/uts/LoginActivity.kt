@@ -9,8 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
+    private val EMAIL_PATTERN = Pattern.compile(
+        "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -25,12 +30,25 @@ class LoginActivity : AppCompatActivity() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "Isi email dan password!", Toast.LENGTH_SHORT).show()
+            if (email.isEmpty()) {
+                emailEditText.error = "Email tidak boleh kosong"
+                return@setOnClickListener
             }
+
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                emailEditText.error = "Format email tidak valid"
+                return@setOnClickListener
+            }
+
+            if (password.isEmpty()) {
+                passwordEditText.error = "Password tidak boleh kosong"
+                return@setOnClickListener
+            }
+
+            // Validasi lolos
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
         }
     }
 }
